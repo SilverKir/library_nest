@@ -19,11 +19,13 @@ export class BooksService {
 
   update(id: string, book: IBook) {
     const index = this.books.findIndex((el) => el.id === id);
-    if (index) {
+    if (typeof index != 'undefined') {
       this.books[index] = book;
+      this.books[index].id = id;
+    } else {
+      throw new Error('Wrong id');
     }
   }
-
   delete(id: string) {
     this.books = this.books.filter((el) => el.id != id);
   }
