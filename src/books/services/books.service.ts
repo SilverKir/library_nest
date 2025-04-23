@@ -11,29 +11,26 @@ export class BooksService {
     @InjectConnection() private connection: Connection,
   ) {}
 
-  create(data: IBook): Promise<BookDocument> {
+  async create(data: IBook): Promise<BookDocument> {
     const book = new this.BookModel(data);
-    return book.save();
+    return await book.save();
   }
 
-  findAll(): IBook[] {
-    return this.books;
+  async findAll(): Promise<BookDocument[]> {
+    return await this.BookModel.find().select('-__v').exec();
   }
 
-  findById(id: string): IBook | undefined {
-    return this.books.find((el) => el.id === id);
+  async findById(id: string): Promise<BookDocument | null> {
+    return await this.BookModel.findOne({ _id: id }).select('-__v').exec();
   }
 
-  update(id: string, book: IBook) {
-    const index = this.books.findIndex((el) => el.id === id);
-    if (typeof index != 'undefined') {
-      this.books[index] = book;
-      this.books[index].id = id;
-    } else {
-      throw new Error('Wrong id');
-    }
+  async update(id: string, book: IBook): Promise<BookDocument | null> {
+    return await this.BookModel.findOneAndUpdate({ _id: id }, book)
+      .select('-__v')
+      .exec();
   }
-  delete(id: string) {
-    this.books = this.books.filter((el) => el.id != id);
+
+  async delete(id: string): Promise<BookDocument | null> {
+    return await this.BookModel.findByIdAndDelete(id);
   }
 }
