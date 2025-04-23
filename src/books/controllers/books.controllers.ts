@@ -8,8 +8,8 @@ import {
   Put,
 } from '@nestjs/common';
 import { BooksService } from '../services/books.service';
-import { IBook } from '../interfaces/books.interface';
-import { Book } from '../models/books.models';
+import { IBook } from '../interfaces/dto/IBook';
+import { Book, BookDocument } from '../models/books.models';
 
 @Controller('book')
 export class BooksController {
@@ -32,14 +32,12 @@ export class BooksController {
   }
 
   @Post()
-  async create(@Body() createBook: IBook): Promise<IBook> {
-    return new Promise((resolve) => {
+  async create(@Body() createBook: IBook): Promise<BookDocument> {
+    return new Promise((resolve, reject) => {
       try {
-        const newBook = new Book(createBook);
-        this.servise.create(newBook);
-        resolve(newBook);
-      } catch {
-        console.log('Incorrect data');
+        resolve(this.servise.create(createBook));
+      } catch (e) {
+        reject(new Error(e));
       }
     });
   }
